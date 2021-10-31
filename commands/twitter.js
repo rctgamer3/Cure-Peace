@@ -90,9 +90,27 @@ module.exports = {
         twitterEmbed.setColor('#1c9cea');
         twitterEmbed.setTitle('Twitter');
 
-        // async function fetchVideo(tweet) {
-        //     v1Client.
-        // }
+        async function videoFetch(tweet_id) {
+            let bitrate = 0;
+            let video_url;
+            if (tweet_id) {
+                const vidtweet = await v1Client.singleTweet(tweet_id) ?? null;
+                if (vidtweet) {
+                    vidtweet.extended_entities.media[0].video_info.variants.forEach(variant => {
+                        if (variant.content_type === 'video/mp4') {
+                            if (variant.bitrate) {
+                                if (variant.bitrate > bitrate) {
+                                    bitrate = variant.bitrate;
+                                    video_url = variant.url;
+                                }
+                            }
+                        }
+                    });
+                }
+                video_url = video_url.replace(/(.*)\?tag=\d+$/, '$1');
+                return video_url;
+            }
+        }
 
         async function postTweet(data, includes) {
 
