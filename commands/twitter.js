@@ -78,7 +78,20 @@ module.exports = {
                     ]
                 },
             ]
-        }
+        },
+        {
+            "type": 1,
+            "name": "vidlookup",
+            "description": "vidlookup",
+            "options": [
+                {
+                    "type": 3,
+                    "name": "tweetid",
+                    "description": "`<ID>`",
+                    "required": true
+                }
+            ]
+        },
     ],
     execute: async function (interaction) {
 
@@ -355,6 +368,14 @@ module.exports = {
                         ephemeral: true
                     }).then(() => interaction.deleteReply({timeout: 5000}));
             }
+        }
+        if (interaction.options._subcommand === 'vidlookup') {
+            const tweet_id = interaction.options._hoistedOptions[0].value;
+
+            await interaction.reply({
+                content: await videoFetch(tweet_id),
+                // threadId: process.env.TWITTER_THREAD_ID
+            });
         }
     },
 };
