@@ -176,10 +176,11 @@ module.exports = {
                 }
             }
 
+            let sanitized_username = author.username.replace(/([*_`~\\])/g, '\\$1');
             if (useWebhook) {
                 if (hasVideo) {
                     return webhook.send({
-                        content: `${author.username} tweeted a video: ` +
+                        content: `${sanitized_username} tweeted a video: ` +
                             `https://twitter.com/${author.username}/status/${tweet.id}`,
                         threadId: process.env.TWITTER_THREAD_ID
                     }).catch(console.error);
@@ -192,7 +193,7 @@ module.exports = {
                 }
             } else {
                 if (hasVideo) {
-                    return message.channel.send(`${author.username} tweeted a video: ` +
+                    return message.channel.send(`${sanitized_username} tweeted a video: ` +
                         `<https://twitter.com/${author.username}/status/${tweet.id}>`, twitterEmbed).catch(console.error);
                 } else {
                     return message.channel.send(`<https://twitter.com/${author.username}/status/${tweet.id}>`, twitterEmbed)
