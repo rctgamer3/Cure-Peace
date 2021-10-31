@@ -1,3 +1,4 @@
+/* jslint esversion: 11 */
 const Discord = require('discord.js');
 const dotenv = require('dotenv');
 dotenv.config({path: 'storage/env/twitter.env'});
@@ -114,9 +115,9 @@ module.exports = {
 
         async function postTweet(data, includes) {
 
-            const useWebhook = true;
+            const useWebhook = false;
 
-            console.log(data);
+            // console.log(data);
             let tweet = data;
             let author = includes.users[0];
 
@@ -135,7 +136,7 @@ module.exports = {
                         twitterEmbed.setImage(media.url + ":orig");
                         break;
                     case 'video':
-                        // fetchVideo(tweet);
+                        // videoFetch(tweet.id);
                         twitterEmbed.setImage(media.preview_image_url);
                         break;
                     default:
@@ -162,11 +163,16 @@ module.exports = {
             }
             if (author.username === "bahijd") {
                 if (hasVideo) {
-                    return message.channel.send({
-                        content:`<https://twitter.com/${author.username}/status/${tweet.id}> ` +
-                        `Hey Sakuga Nerds, did you know bahijd tweeted this video?`,
-                        embeds: [twitterEmbed]
-                    }).catch(console.error);
+                    return () => {
+                        message.channel.send({
+                            content:`<https://twitter.com/${author.username}/status/${tweet.id}> ` +
+                                `Hey Sakuga Nerds, did you know bahijd tweeted this video?`,
+                            embeds: [twitterEmbed]
+                        }).catch(console.error);
+                        // message.channel.send({
+                        //     content: await videoFetch(tweet.id)
+                        // }).catch(console.error);
+                    };
                 } else {
                     return message.channel.send({
                         content: `<https://twitter.com/${author.username}/status/${tweet.id}> ` +
@@ -179,11 +185,16 @@ module.exports = {
             let sanitized_username = author.username.replace(/([*_`~\\])/g, '\\$1');
             if (useWebhook) {
                 if (hasVideo) {
-                    return webhook.send({
-                        content: `${sanitized_username} tweeted a video: ` +
-                            `https://twitter.com/${author.username}/status/${tweet.id}`,
-                        threadId: process.env.TWITTER_THREAD_ID
-                    }).catch(console.error);
+                    return () => {
+                        webhook.send({
+                            content: `${sanitized_username} tweeted a video: ` +
+                                `https://twitter.com/${author.username}/status/${tweet.id}`,
+                            threadId: process.env.TWITTER_THREAD_ID
+                        }).catch(console.error);
+                        // webhook.send({
+                        //     content: await videoFetch(tweet.id)
+                        // }).catch(console.error);
+                    };
                 } else {
                     return webhook.send({
                         content: `<https://twitter.com/${author.username}/status/${tweet.id}>`,
@@ -193,8 +204,13 @@ module.exports = {
                 }
             } else {
                 if (hasVideo) {
-                    return message.channel.send(`${sanitized_username} tweeted a video: ` +
-                        `<https://twitter.com/${author.username}/status/${tweet.id}>`, twitterEmbed).catch(console.error);
+                    return () => {
+                        message.channel.send(`${sanitized_username} tweeted a video: ` +
+                            `<https://twitter.com/${author.username}/status/${tweet.id}>`, twitterEmbed).catch(console.error);
+                    };
+                    // message.channel.send({
+                    //     content: await videoFetch(tweet.id)
+                    // }).catch(console.error);
                 } else {
                     return message.channel.send(`<https://twitter.com/${author.username}/status/${tweet.id}>`, twitterEmbed)
                         .catch(console.error);
