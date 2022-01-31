@@ -27,8 +27,9 @@ node_modules/
 ### Local History extension
 .history/
 
-### Instalation files
-storage
+### Installation files
+storage/config/*.env
+storage/*.json
 
 .DS_Store
 ~$battle design.xlsx
