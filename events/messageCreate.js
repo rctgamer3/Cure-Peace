@@ -1,11 +1,10 @@
 const GlobalFunctions = require('../modules/GlobalFunctions');
-const fs = require('fs');
 const { prefix } = require('../storage/config.json');
 
 module.exports = {
 	name: 'messageCreate',
 	async execute(message) {
-		var cooldown = false;
+		let cooldown = false;
 
 		if (!message.content.startsWith(prefix) || message.author.bot) return;
 
@@ -36,4 +35,4 @@ module.exports = {
 			// message.channel.stopTyping();
 		}
     }
-}
+};
