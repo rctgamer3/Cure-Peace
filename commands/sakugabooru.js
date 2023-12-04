@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 const { ApplicationCommandType, ApplicationCommandOptionType, hyperlink } = require("discord.js");
-const { Pagination, PaginationConfig, PaginationButton } = require("../modules/discord/Pagination");
+const { Pagination, PaginationButton, PaginationConfig } = require("../modules/discord/Pagination");
 const { Embed } = require("../modules/discord/Embed");
 const { errorLog } = require("../modules/Logger");
 const { dateTimeNow, timestampToDateTime } = require("../modules/helper/datetime");
@@ -117,7 +117,7 @@ module.exports = {
 				});
 
 				if (pages.length > 0) {
-					new Pagination().setInterface(interaction)
+					new Pagination().setPortal(interaction)
 						.setPageList(pages)
 						.setButtonList(PaginationButton)
 						.setTimeout(PaginationConfig.timeout)

@@ -1,8 +1,5 @@
-const Pagination = require("@acegoal07/discordjs-pagination");
-
-const {
-	ButtonBuilder, ButtonStyle,
-} = require("discord.js");
+const { Pagination } = require("@acegoal07/discordjs-pagination");
+const { ButtonBuilder, ButtonStyle } = require("discord.js");
 
 // default timeout:
 const PaginationConfig = {

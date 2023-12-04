@@ -1,6 +1,6 @@
 const fetch = require("node-fetch");
 const { ApplicationCommandType, ApplicationCommandOptionType, hyperlink } = require("discord.js");
-const { Pagination, PaginationConfig, PaginationButton } = require("../modules/discord/Pagination");
+const { Pagination, PaginationButton, PaginationConfig } = require("../modules/discord/Pagination");
 const { Embed } = require("../modules/discord/Embed");
 const { errorLog } = require("../modules/Logger");
 const { dateTimeNow } = require("../modules/helper/datetime");
@@ -318,7 +318,7 @@ module.exports = {
 				});
 
 			if (pages.length > 0) {
-				new Pagination().setInterface(interaction)
+				new Pagination().setPortal(interaction)
 					.setPageList(pages)
 					.setButtonList(PaginationButton)
 					.setTimeout(PaginationConfig.timeout)
@@ -498,8 +498,8 @@ module.exports = {
 					const nativeName = character.name.native ?
 						`(${character.name.native})` : "";
 
-					mainEmbed.authorIcon = character.image.medium,
-					mainEmbed.authorName = `${character.name.full} ${nativeName}`,
+					mainEmbed.authorIcon = character.image.medium;
+					mainEmbed.authorName = `${character.name.full} ${nativeName}`;
 					mainEmbed.authorUrl = character.siteUrl;
 
 					mainEmbed.thumbnail = character.image.large;
@@ -692,7 +692,7 @@ module.exports = {
 
 						});
 
-						new Pagination().setInterface(interaction)
+						new Pagination().setPortal(interaction)
 							.setPageList(pages)
 							.setButtonList(PaginationButton)
 							.setTimeout(PaginationConfig.timeout)
@@ -741,7 +741,7 @@ module.exports = {
 
 						});
 
-						new Pagination().setInterface(interaction)
+						new Pagination().setPortal(interaction)
 							.setPageList(pages)
 							.setButtonList(PaginationButton)
 							.setTimeout(PaginationConfig.timeout)

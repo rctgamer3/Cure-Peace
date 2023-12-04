@@ -2,7 +2,7 @@ const saucenao_key = require("dotenv").config().parsed.saucenao_key;
 const fetch = require("node-fetch");
 
 const { ApplicationCommandType, ApplicationCommandOptionType, hyperlink, bold } = require("discord.js");
-const { Pagination, PaginationConfig, PaginationButton } = require("../modules/discord/Pagination");
+const { Pagination, PaginationButton, PaginationConfig } = require("../modules/discord/Pagination");
 const { Embed } = require("../modules/discord/Embed");
 const { errorLog } = require("../modules/Logger");
 const { dateTimeNow } = require("../modules/helper/datetime");
@@ -154,7 +154,7 @@ module.exports = {
 				pages.push(embed.build());
 			});
 
-			return new Pagination().setInterface(interaction)
+			return new Pagination().setPortal(interaction)
 				.setPageList(pages)
 				.setButtonList(PaginationButton)
 				.setTimeout(PaginationConfig.timeout)
@@ -203,7 +203,7 @@ module.exports = {
 				}
 			});
 
-			return new Pagination().setInterface(interaction)
+			return new Pagination().setPortal(interaction)
 				.setPageList(pages)
 				.setButtonList(PaginationButton)
 				.setTimeout(PaginationConfig.timeout)

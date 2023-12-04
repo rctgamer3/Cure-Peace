@@ -1,10 +1,9 @@
 // const Birthday = require("../modules/Birthday");
 const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, PermissionsBitField, ButtonBuilder} = require("discord.js");
-// const { Pagination, PaginationConfig, PaginationButton } = require("../modules/discord/Pagination");
 const {getGuildConfig, setGuildConfig} = require("../modules/Birthday");
 const Birthday = require("../modules/Birthday");
 const {ButtonStyle} = require("discord-api-types/v10");
-const {Pagination, PaginationConfig} = require("../modules/discord/Pagination");
+const { Pagination, PaginationConfig } = require("../modules/discord/Pagination");
 // const wait = require('util').promisify(setTimeout);
 
 module.exports = {
@@ -265,8 +264,8 @@ module.exports = {
 					new ButtonBuilder().setCustomId("previousbtn").setLabel("Previous").setStyle(ButtonStyle.Danger),
 					new ButtonBuilder().setCustomId("nextbtn").setLabel("Next").setStyle(ButtonStyle.Success),
 				];
-				new Pagination().setInterface(interaction)
-					.setPageList(pages)
+				new Pagination().setPortal(interaction)
+					.setPageList(split_pages)
 					.setButtonList(buttonList)
 					.setTimeout(PaginationConfig.timeout)
 					.paginate();
