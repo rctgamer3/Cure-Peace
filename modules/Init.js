@@ -3,6 +3,7 @@ const peacestats = JSON.parse(fs.readFileSync("storage/peacestats.json", "utf8")
 const PeaceStatsModel = require("../models/PeaceStatsModel");
 const DBM_Birthday_Guild = require("../models/BirthdayGuildModel");
 const { getGuildConfig, initBirthdayReportingInstance } = require("./Birthday");
+const { PermissionFlagsBits } = require("discord-api-types/v10");
 
 // check if peacestats data exists
 async function initPeaceStats(client) {
@@ -48,18 +49,21 @@ async function initBirthdayModule(guild) {
 	const DBM_BirthdayGuildInst = new DBM_Birthday_Guild();
 	await getGuildConfig(guild.id, false)
 		.then(async (birthdayGuildData) => {
-			const notif_channel = birthdayGuildData[DBM_BirthdayGuildInst.fields.id_notification_channel];
+			const guild_data_notif_channel = birthdayGuildData[DBM_BirthdayGuildInst.fields.id_notification_channel];
 			const birthdays_enabled_for_guild = birthdayGuildData[DBM_BirthdayGuildInst.fields.enabled] === 1;
-			if (notif_channel !== null) {
-				const birthdayNotifChannelExists = guild.channels.cache.find(ch => ch.id === birthdayGuildData[DBM_BirthdayGuildInst.fields.id_notification_channel]);
-				if (birthdayNotifChannelExists && birthdays_enabled_for_guild) {
+			if (guild_data_notif_channel !== null) {
+				const birthdayNotifChannel = guild.channels.cache.find(ch => ch.id === birthdayGuildData[DBM_BirthdayGuildInst.fields.id_notification_channel]);
+				if (!birthdayNotifChannel.permissionsFor(guild.members.me).has(PermissionFlagsBits.SendMessages)) {
+					console.error(`Notification channel ${birthdayNotifChannel.name} is specified, but we don't have access to send messages there!!`);
+				}
+				if (birthdayNotifChannel && birthdays_enabled_for_guild) {
 					// console.log(`birthday notif channel exists! ${birthdayNotifChannelExists} (${birthdayNotifChannelExists.name})`);
 					console.log(`Loaded birthday module for guild ${guild.id}`);
 					await initBirthdayReportingInstance(guild.id, guild);
 				}
 			}
 			else if (birthdays_enabled_for_guild) {
-				console.warn(`Birthdays enabled for '${guild.name}' but no notification channel specified!`);
+				console.warn(`Birthdays enabled for '${guild.name}' but no notification channel specified! Skipping.`);
 			}
 		})
 
