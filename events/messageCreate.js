@@ -1,5 +1,5 @@
 const dotenv = require("dotenv").config();
-const prefix = dotenv.parsed.bot_prefix;
+const prefix = dotenv.parsed.BOT_PREFIX;
 const { errorLog } = require("../modules/Logger");
 const { dateTimeNow } = require("../modules/helper/datetime");
 

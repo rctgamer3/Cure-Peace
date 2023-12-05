@@ -1,4 +1,4 @@
-const saucenao_key = require("dotenv").config().parsed.saucenao_key;
+const saucenao_key = require("dotenv").config().parsed.SAUCENAO_KEY;
 const fetch = require("node-fetch");
 
 const { ApplicationCommandType, ApplicationCommandOptionType, hyperlink, bold } = require("discord.js");

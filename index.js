@@ -22,4 +22,4 @@ for (const file of eventFiles) {
 	}
 }
 
-client.login(dotenv.parsed.BOT_TOKEN);
+client.login(dotenv.parsed.BOT_TOKEN).then(() => console.log("Logged in."));
