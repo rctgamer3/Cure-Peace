@@ -5,7 +5,7 @@ module.exports = {
 	name: "info",
 	description: "Peace will give info about herself",
 	type: ApplicationCommandType.ChatInput,
-	options:[
+	options: [
 		{
 			name: "server",
 			description: "Peace will give info about herself",

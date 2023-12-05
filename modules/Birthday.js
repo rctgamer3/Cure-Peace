@@ -1,7 +1,7 @@
-const cron = require('node-cron');
+const cron = require("node-cron");
 const DB = require("./Database");
-const DBM_Birthday = require('../models/BirthdayModel');
-const DBM_Birthday_Guild = require('../models/BirthdayGuildModel');
+const DBM_Birthday = require("../models/BirthdayModel");
+const DBM_Birthday_Guild = require("../models/BirthdayGuildModel");
 
 const DBM_BirthdayGuildInst = new DBM_Birthday_Guild();
 const DBM_BirthdayInst = new DBM_Birthday();
@@ -12,9 +12,8 @@ const DBM_BirthdayInst = new DBM_Birthday();
  * @returns {Promise<boolean>}
  */
 async function isGuildEnabled(id_guild) {
-
-    const guild_config = await getGuildConfig(id_guild,false);
-    return guild_config.enabled === 1;
+	const guild_config = await getGuildConfig(id_guild, false);
+	return guild_config.enabled === 1;
 }
 /**
  * Gets config
@@ -24,30 +23,31 @@ async function isGuildEnabled(id_guild) {
  */
 async function getGuildConfig(id_guild, insertNew = true) {
 
-    let parameterWhere = new Map();
-    parameterWhere.set("id_guild", id_guild);
+	const parameterWhere = new Map();
+	parameterWhere.set("id_guild", id_guild);
 
-    let data = await DB.select(DBM_BirthdayGuildInst.tableName, parameterWhere);
+	let data = await DB.select(DBM_BirthdayGuildInst.tableName, parameterWhere);
 
-    // insert
-    if (insertNew) {
-        if (data == null) {
+	// insert
+	if (insertNew) {
+		if (data == null) {
 
-            let parameter = new Map();
-            parameter.set(DBM_BirthdayGuildInst.fields.id_guild, id_guild);
-            parameter.set(DBM_BirthdayGuildInst.fields.id_notification_channel, null);
-            parameter.set(DBM_BirthdayGuildInst.fields.notification_hour, '09:00:00');
-            parameter.set(DBM_BirthdayGuildInst.fields.enabled, 0);
+			const parameter = new Map();
+			parameter.set(DBM_BirthdayGuildInst.fields.id_guild, id_guild);
+			parameter.set(DBM_BirthdayGuildInst.fields.id_notification_channel, null);
+			parameter.set(DBM_BirthdayGuildInst.fields.notification_hour, "09:00:00");
+			parameter.set(DBM_BirthdayGuildInst.fields.enabled, 0);
 
-            await DB.insert(DBM_BirthdayGuildInst.tableName, parameter);
-            data = await DB.selectAll(DBM_BirthdayGuildInst.tableName, parameterWhere);
+			await DB.insert(DBM_BirthdayGuildInst.tableName, parameter);
+			data = await DB.selectAll(DBM_BirthdayGuildInst.tableName, parameterWhere);
 
-            return await data;
-        } else {
-            return data;
-        }
-    }
-    return data;
+			return await data;
+		}
+		else {
+			return data;
+		}
+	}
+	return data;
 }
 
 /**
@@ -57,24 +57,24 @@ async function getGuildConfig(id_guild, insertNew = true) {
  */
 async function getListOfBDsForThisServer(guild) {
 
-    let parameterWhere = new Map();
-    parameterWhere.set(DBM_BirthdayGuildInst.fields.id_guild, guild);
-    // override to be DAC
-    // parameterWhere.set(DBM_BirthdayGuildInst.fields.id_guild, '314512031313035264');
-    parameterWhere.set(DBM_BirthdayGuildInst.fields.enabled, 1);
+	const parameterWhere = new Map();
+	parameterWhere.set(DBM_BirthdayGuildInst.fields.id_guild, guild);
+	// override to be DAC
+	// parameterWhere.set(DBM_BirthdayGuildInst.fields.id_guild, '314512031313035264');
+	parameterWhere.set(DBM_BirthdayGuildInst.fields.enabled, 1);
 
-    const columns = [
-        DBM_BirthdayInst.fields.id_user,
-        DBM_BirthdayInst.fields.birthday,
-        `MONTH(${DBM_BirthdayInst.fields.birthday}) AS 'month'`,
-        `DAY(${DBM_BirthdayInst.fields.birthday}) AS 'day'`,
-        DBM_BirthdayInst.fields.label,
-        DBM_BirthdayInst.fields.notes
-    ];
-    let parameterOrderBy = new Map();
-    parameterOrderBy.set('month', 'ASC');
-    parameterOrderBy.set('day', 'ASC');
-    return await DB.selectColumnsIn(DBM_BirthdayInst.tableName, columns, parameterWhere, parameterOrderBy, null);
+	const columns = [
+		DBM_BirthdayInst.fields.id_user,
+		DBM_BirthdayInst.fields.birthday,
+		`MONTH(${DBM_BirthdayInst.fields.birthday}) AS 'month'`,
+		`DAY(${DBM_BirthdayInst.fields.birthday}) AS 'day'`,
+		DBM_BirthdayInst.fields.label,
+		DBM_BirthdayInst.fields.notes,
+	];
+	const parameterOrderBy = new Map();
+	parameterOrderBy.set("month", "ASC");
+	parameterOrderBy.set("day", "ASC");
+	return await DB.selectColumnsIn(DBM_BirthdayInst.tableName, columns, parameterWhere, parameterOrderBy, null);
 
 //     const query = `SELECT ${DBM_BirthdayInst.fields.id_user},
 //                           ${DBM_BirthdayInst.fields.birthday},
@@ -98,11 +98,11 @@ async function getListOfBDsForThisServer(guild) {
  * @returns {Promise<string>}
  */
 async function generateNotification(birthday) {
-    let output = `It's <@${birthday.id_user}>'s birthday today.`;
-    if (birthday.notes) {
-        output += ` Notes about them: \`${birthday.notes}\``;
-    }
-    return output;
+	let output = `It's <@${birthday.id_user}>'s birthday today.`;
+	if (birthday.notes) {
+		output += ` Notes about them: \`${birthday.notes}\``;
+	}
+	return output;
 }
 
 /**
@@ -115,42 +115,42 @@ async function generateNotification(birthday) {
  * @returns {Promise<ScheduledTask>}
  */
 async function schedulerSetup(birthdays, client, assignedChannel, hour = 9, minute = 0) {
-    hour = hour != null ? hour : 9;
-    minute = minute != null ? minute : 0;
-    let second = 0;
+	hour = hour != null ? hour : 9;
+	minute = minute != null ? minute : 0;
+	const second = 0;
 
-    return new cron.schedule(`${second} ${minute} ${hour} * * *`, async () => {
+	return new cron.schedule(`${second} ${minute} ${hour} * * *`, async () => {
 
-        let today = new Date();
+		const today = new Date();
 
-        for (const birthdayObject of birthdays) {
-            if (birthdayObject instanceof Object) {
-                let birthday = birthdayObject;
+		for (const birthdayObject of birthdays) {
+			if (birthdayObject instanceof Object) {
+				const birthday = birthdayObject;
 
-                // console.log(`${60 - (birthday.month + birthday.day)} (${birthday.month} ${birthday.day})`);
-                if (birthday.month === (today.getUTCMonth() + 1) && birthday.day === today.getUTCDate()) {
-                    // if(60 - (birthday.month + (birthday.day * 3)) === today.getMinutes()) {
-                    // if (birthday.day + birthday.month === today.getMinutes().toString()) {
-                    console.log('BIRTHDAY!');
-                    let message = await generateNotification(birthday);
+				// console.log(`${60 - (birthday.month + birthday.day)} (${birthday.month} ${birthday.day})`);
+				if (birthday.month === (today.getUTCMonth() + 1) && birthday.day === today.getUTCDate()) {
+					// if(60 - (birthday.month + (birthday.day * 3)) === today.getMinutes()) {
+					// if (birthday.day + birthday.month === today.getMinutes().toString()) {
+					console.log("BIRTHDAY!");
+					const message = await generateNotification(birthday);
 
-                    const channel = await client.channels.cache.get(assignedChannel);
+					const channel = await client.channels.cache.get(assignedChannel);
 
-                    channel.send({
-                        content: message,
-                        allowedMentions: {
-                            "users": [],
-                        },
-                    });
-                    console.log(message);
-                }
-            }
-        }
-    }, {
-        scheduled: false,
-        // Use Etc/UTC if that's easier
-        timezone: 'Europe/London'
-    });
+					channel.send({
+						content: message,
+						allowedMentions: {
+							"users": [],
+						},
+					});
+					console.log(message);
+				}
+			}
+		}
+	}, {
+		scheduled: false,
+		// Use Etc/UTC if that's easier
+		timezone: "Europe/London",
+	});
 }
 
 /**
@@ -161,11 +161,11 @@ async function schedulerSetup(birthdays, client, assignedChannel, hour = 9, minu
  */
 async function doesBirthdayExist(id_guild, id_user) {
 
-    let parameterWhere = new Map();
-    parameterWhere.set(DBM_BirthdayInst.fields.id_guild, id_guild);
-    parameterWhere.set(DBM_BirthdayInst.fields.id_user, id_user);
+	const parameterWhere = new Map();
+	parameterWhere.set(DBM_BirthdayInst.fields.id_guild, id_guild);
+	parameterWhere.set(DBM_BirthdayInst.fields.id_user, id_user);
 
-    return await DB.select(DBM_BirthdayInst.tableName, parameterWhere);
+	return await DB.select(DBM_BirthdayInst.tableName, parameterWhere);
 }
 
 /**
@@ -176,28 +176,27 @@ async function doesBirthdayExist(id_guild, id_user) {
  * @param {boolean|undefined} [setEnabled]
  * @returns {Promise<any>}
  */
-async function setGuildConfig(guild, setChannel, setHour, setEnabled) {
-
-    let parameterSet = new Map();
-    if (setChannel)
-        parameterSet.set(DBM_BirthdayGuildInst.fields.id_notification_channel, setChannel);
-    if (setHour !== undefined && setHour != null) {
-
-        // time.setHours(setHour);
-        let newHour = (setHour.toString().length === 1) ? `0${setHour}` : setHour;
-        parameterSet.set(DBM_BirthdayGuildInst.fields.notification_hour, `${newHour}:00:00`);
-    }
-
-    if (setEnabled !== undefined) {
-
-        parameterSet.set(DBM_BirthdayGuildInst.fields.enabled, setEnabled === true ? 1 : 0);
-    }
-
-    let parameterWhere = new Map();
-    parameterWhere.set(DBM_BirthdayGuildInst.fields.id_guild, guild);
-
-    return await DB.update(DBM_BirthdayInst.tableName, parameterSet, parameterWhere);
-}
+// async function setGuildConfig(guild, setChannel, setHour, setEnabled) {
+//
+// 	const parameterSet = new Map();
+// 	if (setChannel) {parameterSet.set(DBM_BirthdayGuildInst.fields.id_notification_channel, setChannel);}
+// 	if (setHour !== undefined && setHour != null) {
+//
+// 		// time.setHours(setHour);
+// 		const newHour = (setHour.toString().length === 1) ? `0${setHour}` : setHour;
+// 		parameterSet.set(DBM_BirthdayGuildInst.fields.notification_hour, `${newHour}:00:00`);
+// 	}
+//
+// 	if (setEnabled !== undefined) {
+//
+// 		parameterSet.set(DBM_BirthdayGuildInst.fields.enabled, setEnabled === true ? 1 : 0);
+// 	}
+//
+// 	const parameterWhere = new Map();
+// 	parameterWhere.set(DBM_BirthdayGuildInst.fields.id_guild, guild);
+//
+// 	return await DB.update(DBM_BirthdayInst.tableName, parameterSet, parameterWhere);
+// }
 
 /**
  * Adds birthday of the user for this guild to the DB
@@ -210,56 +209,57 @@ async function setGuildConfig(guild, setChannel, setHour, setEnabled) {
  */
 async function addBirthday(id_guild, id_user, birthday, label, notes) {
 
-    let haveBirthday = await doesBirthdayExist(id_guild, id_user);
-    if (haveBirthday != null) {
-        return 'BIRTHDAY_EXISTS';
-    }
+	const haveBirthday = await doesBirthdayExist(id_guild, id_user);
+	if (haveBirthday != null) {
+		return "BIRTHDAY_EXISTS";
+	}
 
-    let parameters = new Map();
-    parameters.set(DBM_BirthdayInst.fields.id_guild, id_guild);
-    parameters.set(DBM_BirthdayInst.fields.id_user, id_user);
-    parameters.set(DBM_BirthdayInst.fields.birthday, birthday);
-    parameters.set(DBM_BirthdayInst.fields.label, label);
-    // parameters.set(DBM_BirthdayInst.fields.notes, DBConn.conn.escape(notes));
-    // needs new escaping
-    parameters.set(DBM_BirthdayInst.fields.notes, notes);
+	const parameters = new Map();
+	parameters.set(DBM_BirthdayInst.fields.id_guild, id_guild);
+	parameters.set(DBM_BirthdayInst.fields.id_user, id_user);
+	parameters.set(DBM_BirthdayInst.fields.birthday, birthday);
+	parameters.set(DBM_BirthdayInst.fields.label, label);
+	// parameters.set(DBM_BirthdayInst.fields.notes, DBConn.conn.escape(notes));
+	// needs new escaping
+	parameters.set(DBM_BirthdayInst.fields.notes, notes);
 
-    let add_insert = await DB.insert(DBM_BirthdayInst.tableName, parameters);
-    return add_insert ? 'BIRTHDAY_ADDED' : 'BIRTHDAY_ERROR';
+	const add_insert = await DB.insert(DBM_BirthdayInst.tableName, parameters);
+	return add_insert ? "BIRTHDAY_ADDED" : "BIRTHDAY_ERROR";
 }
 
 async function initBirthdayReportingInstance(guildId, guild) {
-    let birthdayGuildData = await getGuildConfig(guildId, true);
+	const birthdayGuildData = await getGuildConfig(guildId, true);
 
 
-    if (birthdayGuildData[DBM_BirthdayGuildInst.fields.id_notification_channel] != null) {
-        let assignedChannelId = birthdayGuildData[DBM_BirthdayGuildInst.fields.id_notification_channel];
-        // todo: replace with notification_time column name later
-        let time = birthdayGuildData[DBM_BirthdayGuildInst.fields.notification_hour];
+	if (birthdayGuildData[DBM_BirthdayGuildInst.fields.id_notification_channel] != null) {
+		const assignedChannelId = birthdayGuildData[DBM_BirthdayGuildInst.fields.id_notification_channel];
+		// todo: replace with notification_time column name later
+		const time = birthdayGuildData[DBM_BirthdayGuildInst.fields.notification_hour];
 
-        let enabled = parseInt(birthdayGuildData[DBM_BirthdayGuildInst.fields.enabled]) === 1;
+		const enabled = parseInt(birthdayGuildData[DBM_BirthdayGuildInst.fields.enabled]) === 1;
 
-        // fallback check
-        const valid_time = /(\d{2}):(\d{2}):(\d{2})$/.test(time);
-        if (valid_time) {
-            const arr = time.split(':');
-            let hour = parseInt(arr[0]);
-            let minute = parseInt(arr[1]);
-            // let sec = parseInt(arr[2]);
+		// fallback check
+		const valid_time = /(\d{2}):(\d{2}):(\d{2})$/.test(time);
+		if (valid_time) {
+			const arr = time.split(":");
+			const hour = parseInt(arr[0]);
+			const minute = parseInt(arr[1]);
+			// let sec = parseInt(arr[2]);
 
-            const birthdays = await getListOfBDsForThisServer(guildId);
+			const birthdays = await getListOfBDsForThisServer(guildId);
 
-            if (birthdays.length > 0) {
-                let schedule = await schedulerSetup(birthdays, guild, assignedChannelId, hour, minute);
+			if (birthdays.length > 0) {
+				const schedule = await schedulerSetup(birthdays, guild, assignedChannelId, hour, minute);
 
-                if (enabled) {
-                    schedule.start();
-                }
-            } else {
-                console.error("Invalid format for notification time specified");
-            }
-        }
-    }
+				if (enabled) {
+					schedule.start();
+				}
+			}
+			else {
+				console.error("Invalid format for notification time specified");
+			}
+		}
+	}
 }
 
 /**
@@ -269,26 +269,27 @@ async function initBirthdayReportingInstance(guildId, guild) {
  * @returns {Promise<string>}
  */
 async function removeBirthday(id_guild, id_user) {
-    const hasValidBirthday = await doesBirthdayExist(id_guild, id_user);
+	const hasValidBirthday = await doesBirthdayExist(id_guild, id_user);
 
-    if (hasValidBirthday !== null) {
-        let parameterWhere = new Map();
-        parameterWhere.set(DBM_BirthdayInst.fields.id_guild, id_guild);
-        parameterWhere.set(DBM_BirthdayInst.fields.id_user, id_user);
-        let deleted = await DB.del(DBM_BirthdayInst.tableName,parameterWhere);
+	if (hasValidBirthday !== null) {
+		const parameterWhere = new Map();
+		parameterWhere.set(DBM_BirthdayInst.fields.id_guild, id_guild);
+		parameterWhere.set(DBM_BirthdayInst.fields.id_user, id_user);
+		const deleted = await DB.del(DBM_BirthdayInst.tableName, parameterWhere);
 
-        return deleted ? 'BIRTHDAY_DELETED' : 'BIRTHDAY_ERROR';
-    } else {
-        return 'NO_BIRTHDAY';
-    }
+		return deleted ? "BIRTHDAY_DELETED" : "BIRTHDAY_ERROR";
+	}
+	else {
+		return "NO_BIRTHDAY";
+	}
 }
 
 module.exports = {
-    getGuildConfig,
-    initBirthdayReportingInstance,
-    addBirthday,
-    isGuildEnabled,
-    removeBirthday,
-    getListOfBDsForThisServer,
-    setGuildConfig
+	getGuildConfig,
+	initBirthdayReportingInstance,
+	addBirthday,
+	isGuildEnabled,
+	removeBirthday,
+	getListOfBDsForThisServer,
+	// setGuildConfig,
 };

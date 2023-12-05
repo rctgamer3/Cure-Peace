@@ -26,7 +26,7 @@ module.exports = {
 				let command = interaction.customId.split(".");
 
 				switch (interaction.componentType) {
-					//TODO: Replace deprecated SelectMenu
+				// TODO: Replace deprecated SelectMenu
 				case ComponentType.SelectMenu:
 					// split dot and get the command
 					// modify the id & remove the command name

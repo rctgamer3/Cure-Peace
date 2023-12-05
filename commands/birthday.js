@@ -1,8 +1,8 @@
 // const Birthday = require("../modules/Birthday");
-const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, PermissionsBitField, ButtonBuilder} = require("discord.js");
-const {getGuildConfig, setGuildConfig} = require("../modules/Birthday");
+const { ApplicationCommandType, ApplicationCommandOptionType, EmbedBuilder, ButtonBuilder } = require("discord.js");
+// const { getGuildConfig, setGuildConfig } = require("../modules/Birthday");
 const Birthday = require("../modules/Birthday");
-const {ButtonStyle} = require("discord-api-types/v10");
+const { ButtonStyle } = require("discord-api-types/v10");
 const { Pagination, PaginationConfig } = require("../modules/discord/Pagination");
 // const wait = require('util').promisify(setTimeout);
 
@@ -147,16 +147,16 @@ module.exports = {
 		const author_name = interaction.user.username;
 		const isBirthdayEnabled = await Birthday.isGuildEnabled(guild_id);
 		if (!isBirthdayEnabled) {
-			return interaction.reply({ content: `The birthday module is not enabled for this server.`, ephemeral: true });
+			return interaction.reply({ content: "The birthday module is not enabled for this server.", ephemeral: true });
 		}
 		// await interaction.deferReply();
 		switch (subcommand) {
-		case "add":
-			const month = interaction.options._hoistedOptions.find(opt => opt.name === "month").value.toString();
-			const day = interaction.options._hoistedOptions.find(opt => opt.name === "day").value.toString();
+		case "add": {
+			const add_month = interaction.options._hoistedOptions.find(opt => opt.name === "month").value.toString();
+			const add_day = interaction.options._hoistedOptions.find(opt => opt.name === "day").value.toString();
 			// const validMonth = /^([1-9]|1[0-2])$/.test(month.toString());
 			const regex = /^(?:(?:1|3|5|7|8|10|12)-(?:[1-9]|1[0-9]|2[0-9]|3[01])|(?:4|6|9|11)-(?:0[1-9]|1[0-9]|2[0-9]|30)|2-(?:[1-9]|1[0-9]|2[0-9]))$/;
-			const time = `${month.toString()}-${day.toString()}`;
+			const time = `${add_month.toString()}-${add_day.toString()}`;
 			const isValidDate = regex.test(time);
 
 			if (!isValidDate) {
@@ -183,30 +183,31 @@ module.exports = {
 			const label = author_name;
 			const birthday = new Date();
 			// zero-based month integer
-			birthday.setMonth(parseInt(month.toString()) - 1);
-			birthday.setDate(parseInt(day.toString()));
+			birthday.setMonth(parseInt(add_month.toString()) - 1);
+			birthday.setDate(parseInt(add_day.toString()));
 			// february 29
-			if (month.toString() === "1" && day.toString() === "29") {
+			if (add_month.toString() === "1" && add_day.toString() === "29") {
 				birthday.setFullYear(2024);
 			}
 
 			const add = await Birthday.addBirthday(guild_id, author_id, birthday, label, notes);
 			switch (add) {
-				case "BIRTHDAY_EXISTS":
-					await interaction.reply({
-						content: "I already have your birthday on file. Remove your birthday and" +
-							" re-add it.", ephemeral: false
-					});
-					break;
-				case "BIRTHDAY_ADDED":
-					await interaction.reply({ephemeral: false, content: "✅"});
-					break;
-				case "BIRTHDAY_ERROR":
-					await interaction.reply({content: "Something went wrong."});
-					break;
+			case "BIRTHDAY_EXISTS":
+				await interaction.reply({
+					content: "I already have your birthday on file. Remove your birthday and" +
+                                " re-add it.", ephemeral: false,
+				});
+				break;
+			case "BIRTHDAY_ADDED":
+				await interaction.reply({ ephemeral: false, content: "✅" });
+				break;
+			case "BIRTHDAY_ERROR":
+				await interaction.reply({ content: "Something went wrong." });
+				break;
 			}
 			break;
-		case "list":
+		}
+		case "list": {
 			const birthdayList = await Birthday.getListOfBDsForThisServer(guild_id);
 
 			const listSize = birthdayList.length;
@@ -219,13 +220,14 @@ module.exports = {
 			// await interaction.guild.members.fetch([members]).filter;
 
 			if (listSize > 25) {
-				let pages;
+				const split_pages = [];
 				const chunk = 25;
-				const split = birthdayList.reduce((splitArray, item, index) => {
+				const splits = birthdayList.reduce((splitArray, item, index) => {
 					const chunkIndex = Math.floor(index / chunk);
 
 					if (!splitArray[chunkIndex]) {
-						splitArray[chunkIndex] = []; // start a new chunk
+						// start a new chunk
+						splitArray[chunkIndex] = [];
 					}
 
 					splitArray[chunkIndex].push(item);
@@ -234,9 +236,9 @@ module.exports = {
 				}, []);
 
 				// for (const splitKey in split) {
+
 				// console.log(split);
-				pages = [];
-				split.forEach((split) => {
+				splits.forEach((split) => {
 					let split_desc = "";
 					split.forEach(birthday => {
 						const userObj = interaction.guild.members.cache.get(`${birthday.id_user}`);
@@ -256,7 +258,7 @@ module.exports = {
 						.setTitle("Birthday list")
 						.setDescription(split_desc);
 
-					pages.push(embed_split);
+					split_pages.push(embed_split);
 				});
 
 
@@ -270,7 +272,7 @@ module.exports = {
 					.setTimeout(PaginationConfig.timeout)
 					.paginate();
 
-				// await paginationEmbed(interaction, pages, buttonList);
+				// await paginationEmbed(interaction, split_pages, buttonList);
 			}
 			else {
 				const birthdayListEmbed = new EmbedBuilder();
@@ -301,12 +303,13 @@ module.exports = {
 				});
 			}
 			break;
-		case "remove":
+		}
+		case "remove": {
 			const removeBirthday = await Birthday.removeBirthday(guild_id, author_id);
 
 			switch (removeBirthday) {
 			case "NO_BIRTHDAY":
-				await interaction.reply({content: "There's no birthday on file!", ephemeral: false});
+				await interaction.reply({ content: "There's no birthday on file!", ephemeral: false });
 				break;
 			case "BIRTHDAY_DELETED":
 				await interaction.reply({ content: "✅", ephemeral: false });
@@ -315,6 +318,7 @@ module.exports = {
 				await interaction.reply("Something went wrong.");
 				break;
 			}
+		}
 		}
 	},
 };

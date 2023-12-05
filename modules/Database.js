@@ -150,11 +150,11 @@ async function selectIn(tableName, columns, valWhere, limit = null) {
  * @param limit - Limits number of results
  * @returns {Promise<void>}
  */
-async function selectColumnsIn(tableName, columns, parameterWhere, parameterOrderBy = null, limit = null ) {
+async function selectColumnsIn(tableName, columns, parameterWhere, parameterOrderBy = null, limit = null) {
 	const arrParameterized = [];
 
 	let _query = `SELECT ${columns} FROM ${tableName}`;
-	 _query += " WHERE ";
+	_query += " WHERE ";
 
 	for (const [key, value] of parameterWhere.entries()) {
 		_query += ` ${key}=? AND `;
@@ -277,6 +277,7 @@ async function selectRandom(tableName, parameterWhere = null, limit = 1) {
 // basic random select functions with grouping
 async function selectRandomNonDuplicate(tableName, parameterWhere = null,
 	parameterGroupBy = null, limit = 1) {
+
 	// select 1 random row
 	const arrParameterized = [];
 	let _query = `SELECT * FROM ${tableName} `;
@@ -447,5 +448,5 @@ module.exports = {
 	update,
 	del,
 	count,
-	query
+	query,
 };

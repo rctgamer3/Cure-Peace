@@ -6,6 +6,7 @@ const Img = require("../res/Img");
 const typography = require("../helper/typography");
 
 // base class of embed builder
+// noinspection JSUnusedGlobalSymbols
 class Embed {
 	static defaultColor = Color.yellow.embed_color;
 	static color = Object.freeze({
@@ -66,11 +67,11 @@ class Embed {
 	}
 
 	// options setter:
-	set withAuthor(param = true) {
+	set withAuthor(param) {
 		this.options.withAuthor = param;
 	}
 
-	set isPrivate(param = true) {
+	set isPrivate(param) {
 		this.options.isPrivate = param;
 	}
 
@@ -132,7 +133,7 @@ class Embed {
 		this.objEmbed.fields.push({
 			name: name,
 			value: value,
-			inline: inline ? true : false,
+			inline: inline,
 		});
 	}
 
@@ -260,8 +261,7 @@ class Embed {
 			this.objEmbed.author = null;
 		}
 
-		const eb = { embeds:[new EmbedBuilder(this.objEmbed)], ephemeral: this.options.isPrivate };
-		return eb;
+		return { embeds: [new EmbedBuilder(this.objEmbed)], ephemeral: this.options.isPrivate };
 	}
 
 	buildDanger() {
@@ -282,6 +282,7 @@ class Embed {
 }
 
 // base embed class of validation builder
+// noinspection JSUnusedGlobalSymbols
 class EmbedValidation extends Embed {
 	isPrivate = true;
 

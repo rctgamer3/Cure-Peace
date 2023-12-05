@@ -100,9 +100,9 @@ module.exports = {
 		const clientId = interaction.applicationId;
 
 		const img = {
-			"rock":"https://i.imgur.com/xvAk8aA.png",
-			"paper":"https://i.imgur.com/uQtSfqD.png",
-			"scissors":"https://i.imgur.com/vgqsHN5.png",
+			"rock": "https://i.imgur.com/xvAk8aA.png",
+			"paper": "https://i.imgur.com/uQtSfqD.png",
+			"scissors": "https://i.imgur.com/vgqsHN5.png",
 		};
 
 		await interaction.deferReply();
@@ -135,7 +135,7 @@ module.exports = {
 		await peaceStatsDB.find(paramWhere);
 
 		switch (interaction.options.getSubcommand()) {
-		case "play":{
+		case "play": {
 			const embed = new Embed();
 			const selection = interaction.options.getString("move");
 
@@ -156,36 +156,36 @@ module.exports = {
 			let peaceState = State.Draw;
 
 			switch (selection) {
-			case "rock":{
+			case "rock": {
 				switch (peaceChoice) {
-				case Choice.Rock:{
+				case Choice.Rock: {
 					peaceState = State.Draw;
 					break;
 				}
-				case Choice.Paper:{
+				case Choice.Paper: {
 					peaceState = State.Win;
 					break;
 				}
 				case Choice.Scissors:
-				default:{
+				default: {
 					peaceState = State.Lose;
 					break;
 				}
 				}
 				break;
 			}
-			case "paper":{
+			case "paper": {
 				switch (peaceChoice) {
-				case Choice.Rock:{
+				case Choice.Rock: {
 					peaceState = State.Lose;
 					break;
 				}
-				case Choice.Paper:{
+				case Choice.Paper: {
 					peaceState = State.Draw;
 					break;
 				}
 				case Choice.Scissors:
-				default:{
+				default: {
 					peaceState = State.Win;
 					break;
 				}
@@ -193,18 +193,18 @@ module.exports = {
 				break;
 			}
 			case "scissors":
-			default:{
+			default: {
 				switch (peaceChoice) {
-				case Choice.Rock:{
+				case Choice.Rock: {
 					peaceState = State.Win;
 					break;
 				}
-				case Choice.Paper:{
+				case Choice.Paper: {
 					peaceState = State.Lose;
 					break;
 				}
 				case Choice.Scissors:
-				default:{
+				default: {
 					peaceState = State.Draw;
 					break;
 				}
@@ -300,7 +300,7 @@ module.exports = {
 				const paramOrderBy = new Map();
 				paramOrderBy.set(peaceStatsDB.fields.points, "DESC");
 				const results = await PeaceStatsModel.DB.selectAll(peaceStatsDB.tableName, null, paramOrderBy, 10);
-				for (let i = 0; i < results.length;i++) {
+				for (let i = 0; i < results.length; i++) {
 					const leaderboardModel = new PeaceStatsModel();
 					leaderboardModel.setData(results[i]);
 

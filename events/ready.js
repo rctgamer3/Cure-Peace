@@ -8,8 +8,6 @@ const fs = require("fs");
 const { errorLog } = require("../modules/Logger");
 const { dateTimeNow } = require("../modules/helper/datetime");
 const Init = require("../modules/Init");
-const {getGuildConfig, initBirthdayReportingInstance} = require("../modules/Birthday");
-const DBM_Birthday_Guild = require("../models/BirthdayGuildModel");
 
 // returns error message on catch
 function errorHandler(tag, error) {
@@ -53,11 +51,12 @@ module.exports = {
 							// console.log("Refreshing commands (/)");
 							await rest.put(
 								Routes.applicationGuildCommands(`${client.application.id}`, `${guild.id}`),
-								{body: client.commands.toJSON()},
+								{ body: client.commands.toJSON() },
 							);
 
 							// console.log("Commands reloaded (/)");
-						} catch (error) {
+						}
+						catch (error) {
 							errorHandler("ON_READY_DEV_COMMAND_LOAD", error);
 						}
 					})();
